@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { FileList } from './components/FileList';
-import FiltersContainer from './components/FileFilters';
+import { FiltersContainer } from './components/FilterContainer';
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
   const handleUploadSuccess = () => {
     setRefreshKey(prev => prev + 1);
@@ -27,10 +28,10 @@ function App() {
               <FileUpload onUploadSuccess={handleUploadSuccess} />
             </div>
             <div className="bg-white shadow sm:rounded-lg p-4">
-              <FiltersContainer />
+              <FiltersContainer onFilterChange={setFilters} />
             </div>
             <div className="bg-white shadow sm:rounded-lg">
-              <FileList key={refreshKey} />
+              <FileList key={refreshKey} filters={filters} />
             </div>
           </div>
         </div>

@@ -16,8 +16,10 @@ export const fileService = {
     return response.data;
   },
 
-  async getFiles(): Promise<FileType[]> {
-    const response = await axios.get(`${API_URL}/files/`);
+  async getFiles(filters: { filename?: string; date?: string; file_type?: string } = {}): Promise<FileType[]> {
+    const response = await axios.get(`${API_URL}/files/`, {
+      params: filters,
+    });
     return response.data;
   },
 

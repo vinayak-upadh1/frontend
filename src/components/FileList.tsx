@@ -4,13 +4,17 @@ import { File as FileType } from '../types/file';
 import { DocumentIcon, TrashIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const FileList: React.FC = () => {
+type Props = {
+  filters: Record<string, string>;
+};
+
+export const FileList: React.FC<Props> = ({ filters }) => {
   const queryClient = useQueryClient();
 
   // Query for fetching files
   const { data: files, isLoading, error } = useQuery({
-    queryKey: ['files'],
-    queryFn: fileService.getFiles,
+    queryKey: ['files', filters],
+    queryFn: () => fileService.getFiles(filters),
   });
 
   // Mutation for deleting files
@@ -98,48 +102,48 @@ export const FileList: React.FC = () => {
         </div>
       ) : (
         <div className="mt-6 flow-root">
-          <ul className="-my-5 divide-y divide-gray-200">
-            {files.map((file) => (
-              <li key={file.id} className="py-4">
-                <div className="flex items-center space-x-4">
+        <ul className="-my-5 divide-y divide-gray-200">
+          {files.map((file) => (
+            <li key={file.id} className="py-4">
+              <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
-                    <DocumentIcon className="h-8 w-8 text-gray-400" />
+                <DocumentIcon className="h-8 w-8 text-gray-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {file.original_filename}
-                    </p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {file.filename}
+                  </p>
                     <p className="text-sm text-gray-500">
                       {file.file_type} • {(file.size / 1024).toFixed(2)} KB
                     </p>
                     <p className="text-sm text-gray-500">
                       Uploaded {new Date(file.uploaded_at).toLocaleString()}
                     </p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleDownload(file.file, file.original_filename)}
-                      disabled={downloadMutation.isPending}
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleDownload(file.file, file.filename)}
+                    disabled={downloadMutation.isPending}
                       className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                    >
+                  >
                       <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
                       Download
-                    </button>
-                    <button
-                      onClick={() => handleDelete(file.id)}
-                      disabled={deleteMutation.isPending}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(file.id)}
+                    disabled={deleteMutation.isPending}
                       className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
+                  >
                       <TrashIcon className="h-4 w-4 mr-1" />
                       Delete
-                    </button>
-                  </div>
+                  </button>
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+            </li>
+          ))}
+        </ul>
         </div>
       )}
     </div>
   );
-}; 
+};
